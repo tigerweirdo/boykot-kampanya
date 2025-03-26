@@ -202,15 +202,21 @@ const BoycottApp = () => {
         case 'instagram': {
           const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
           if (isMobile) {
-            // Mobil cihazlarda direkt indirme linki oluştur
+            // Mobil cihazlarda görseli direkt indirme linki oluştur
             const link = document.createElement('a');
             link.href = dataUrl;
             link.download = 'boykot-karti.jpg';
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            
+            // Kısa bir gecikme ile Instagram modalını göster
+            setTimeout(() => {
+              setInstagramTipVisible(true);
+            }, 500);
           }
-          setInstagramTipVisible(true);
           break;
         }
           
