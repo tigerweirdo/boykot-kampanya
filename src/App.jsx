@@ -145,7 +145,7 @@ const BoycottApp = () => {
   // kart oluşturma ve paylaşım işlemi
   const handleShareWithBadge = async (platform) => {
     // kart metnini oluştur
-    const badgeText = `Ben de\nBOYKOTA KATILDIM\n#${activeDays}. Gün\n${participants} kişiyiz\nboykot.org`;
+    const badgeText = `Ben de\nBOYKOTA KATILDIM\n#${activeDays}. Gün\n${participants} kişiyiz\nboykot-kampanya.vercel.app`;
     
     // kart görselini oluştur
     const canvas = document.createElement('canvas');
@@ -194,9 +194,6 @@ const BoycottApp = () => {
     ctx.fillText(`${participants} KİŞİYİZ`, canvas.width/2, canvas.height * 0.68);
     
     // Web sitesi - Kişiye özel renkli, daha küçük
-    ctx.fillStyle = personalColor;
-    ctx.font = 'bold 50px Montserrat, Arial, sans-serif';
-    ctx.fillText('boykot.org', canvas.width/2, canvas.height * 0.82);
     
     // Görseli yüksek kalitede PNG olarak oluştur
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
@@ -239,7 +236,7 @@ const BoycottApp = () => {
           navigator.share({
             title: 'Boykot Kampanyası',
             text: badgeText,
-            url: 'https://boykot.org'
+            url: 'https://boykot-kampanya.vercel.app'
           });
         }
     }
@@ -261,6 +258,8 @@ const BoycottApp = () => {
             <li>Instagram uygulamasını açın</li>
             <li>Hikaye oluştur'a tıklayın</li>
             <li>İndirdiğiniz kartı seçin</li>
+            <li>Metin ekle butonuna tıklayın</li>
+            <li>boykot-kampanya.vercel.app adresini yapıştırın</li>
             <li>Paylaşın</li>
           </ol>
           <div className="flex justify-end space-x-2">
@@ -285,7 +284,31 @@ const BoycottApp = () => {
 
   // Sosyal medya paylaşım işlemi
   const handleShare = (platform) => {
-    handleShareWithBadge(platform);
+    const shareText = `#Boykot kampanyasına ben de katıldım! ${participants.toLocaleString()} kişiyiz ve büyüyoruz. Sen de katıl:`;
+    const shareUrl = 'https://boykot-kampanya.vercel.app';
+
+    switch(platform) {
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+        break;
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
+        break;
+      case 'instagram':
+        handleShareWithBadge('instagram');
+        break;
+      default:
+        if (navigator.share) {
+          navigator.share({
+            title: 'Boykot Kampanyası',
+            text: shareText,
+            url: shareUrl
+          });
+        }
+    }
   };
 
   return (
@@ -438,11 +461,13 @@ const BoycottApp = () => {
                     </div>
                     <div className="relative mt-6">
                       <div className="border border-gray-200 rounded-md p-3 bg-gray-50 text-sm text-gray-700 leading-relaxed">
-                        #Boykot kampanyasına ben de katıldım! {participants.toLocaleString()} kişiyiz ve büyüyoruz. Sen de katıl: boykot.org
+                        boykot-kampanya.vercel.app
                       </div>
-                      <button onClick={() => handleShare('copy')} className="absolute right-3 top-2.5 bg-white hover:bg-gray-100 text-gray-700 text-xs py-1 px-2 rounded border border-gray-300 transition-colors">
-                        {copySuccess ? 'Kopyalandı!' : 'Kopyala'}
-                      </button>
+                      <div className="flex justify-end mt-2">
+                        <button onClick={() => handleShare('copy')} className="bg-white hover:bg-gray-100 text-gray-700 text-xs py-1 px-2 rounded border border-gray-300 transition-colors">
+                          {copySuccess ? 'Kopyalandı!' : 'Kopyala'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <div>
@@ -451,7 +476,6 @@ const BoycottApp = () => {
                       <div className="text-2xl font-bold text-black mb-1">BOYKOTA KATILDIM</div>
                       <div className="text-sm text-red-600 mt-2">#{activeDays}. GÜN</div>
                       <div className="text-lg font-bold text-black mt-1">{participants} KİŞİYİZ</div>
-                      <div className="text-xs text-red-600 mt-3">boykot.org</div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <button 
@@ -474,7 +498,7 @@ const BoycottApp = () => {
       <footer className="bg-gray-800 text-white py-6">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <div className="mb-2">
-            <span>BOYKOT KAMPANYASI</span>
+            <span>BOYKOT KAMPANYA</span>
           </div>
           <p className="text-sm opacity-70">
             © 2025 · Hiçbir kişisel veri toplanmaz veya depolanmaz · Tüm katılımlar anonimdir
