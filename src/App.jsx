@@ -220,6 +220,9 @@ const BoycottApp = () => {
             link.click();
             document.body.removeChild(link);
             
+            // Görseli yeni sekmede aç
+            window.open(url, '_blank');
+            
             // URL'i temizle
             URL.revokeObjectURL(url);
             
@@ -232,13 +235,20 @@ const BoycottApp = () => {
         }
           
         case 'download':
-          // Görseli indir
-          const link = document.createElement('a');
-          link.href = dataUrl;
-          link.download = 'boykot-karti.jpg';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          // Görseli indir ve aç
+          const downloadUrl = URL.createObjectURL(new Blob([atob(dataUrl.split(',')[1])], { type: 'image/jpeg' }));
+          const downloadLink = document.createElement('a');
+          downloadLink.href = downloadUrl;
+          downloadLink.download = 'boykot-karti.jpg';
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+          
+          // Görseli yeni sekmede aç
+          window.open(downloadUrl, '_blank');
+          
+          // URL'i temizle
+          URL.revokeObjectURL(downloadUrl);
           break;
           
         case 'copy':
