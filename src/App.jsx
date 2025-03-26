@@ -320,122 +320,121 @@ const BoycottApp = () => {
     }
   };
   
-  // Instagram paylaşım modalı - Profesyonel tasarımla geliştirilmiş
+  // Instagram paylaşım modalı - Kompakt ve işlevsel tasarım
   const InstagramTipModal = ({ isVisible, onClose }) => {
     if (!isVisible) return null;
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
-          <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+        <div className="bg-white rounded-lg w-full max-w-md mx-4 flex flex-col max-h-[90vh] overflow-hidden">
+          {/* Sabit başlık */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-100">
             <div className="flex items-center">
-              <div className="bg-gradient-to-tr from-purple-600 to-pink-500 p-2 rounded-md mr-3">
-                <Instagram size={22} className="text-white" />
+              <div className="bg-gradient-to-tr from-purple-600 to-pink-500 p-1.5 rounded-md mr-2">
+                <Instagram size={18} className="text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-800">Instagram'da Paylaş</h3>
+              <h3 className="text-lg font-bold text-gray-800">Instagram'da Paylaş</h3>
             </div>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-              ✕
-            </button>
-          </div>
-          
-          <p className="text-gray-600 mb-5 font-medium">
-            Oluşturduğunuz kartı Instagram hikayenizde paylaşarak boykota destek olan herkesin gücünü gösterin.
-          </p>
-          
-          {/* Profesyonel hikaye paylaşımı rehberi */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-5 mb-5 shadow-inner">
-            <h4 className="text-gray-700 font-semibold mb-4 flex items-center">
-              <span className="inline-block bg-purple-100 text-purple-600 p-1 rounded-md mr-2">
-                <Share2 size={16} />
-              </span>
-              PAYLAŞIM ADIMLAR
-            </h4>
-            
-            <div className="space-y-4">
-              <div className="flex">
-                <div className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 mr-3">
-                  1
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">Kartı İndirin</p>
-                  <p className="text-gray-600 text-sm">
-                    Aşağıdaki "Kartı İndir" butonuna dokunarak görselinizi telefonunuza kaydedin.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex">
-                <div className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 mr-3">
-                  2
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">Instagram Uygulamasını Açın</p>
-                  <p className="text-gray-600 text-sm">
-                    Telefonunuzdan Instagram uygulamasına geçiş yapın veya uygulamayı açın.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex">
-                <div className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 mr-3">
-                  3
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">Hikaye Oluşturun</p>
-                  <p className="text-gray-600 text-sm">
-                    Sol üstteki profil fotoğrafınıza uzun basın veya sağ üstteki "+" simgesine dokunarak "Hikaye" seçeneğini seçin.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex">
-                <div className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 mr-3">
-                  4
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">Galeriden Seçin</p>
-                  <p className="text-gray-600 text-sm">
-                    Ekranın sol alt köşesindeki galeri simgesine dokunun ve az önce indirdiğiniz boykot kartını seçin.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex">
-                <div className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 mr-3">
-                  5
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800">Web Sitesi Bağlantısını Ekleyin</p>
-                  <p className="text-gray-600 text-sm">
-                    Üst menüden "Aa" metin ekleme butonuna dokunun ve aşağıdaki kampanya bağlantısını yazın veya yapıştırın:
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Bağlantı ve kopyalama butonu */}
-          <div className="bg-gray-50 border border-gray-200 rounded-md py-2 px-3 mb-5 flex items-center justify-between">
-            <div className="flex items-center text-gray-700">
-              <Globe size={15} className="mr-2 text-gray-500" />
-              <span className="font-medium text-sm">boykot-kampanya.vercel.app</span>
-            </div>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText('boykot-kampanya.vercel.app');
-                setCopySuccess(true);
-                setTimeout(() => setCopySuccess(false), 2000);
-              }}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs py-1 px-3 rounded border border-gray-300 transition-colors flex items-center"
+            <button 
+              onClick={onClose} 
+              className="bg-gray-200 hover:bg-gray-300 rounded-full p-1 transition-colors"
             >
-              <Copy size={14} className="mr-1" />
-              {copySuccess ? 'Kopyalandı!' : 'Kopyala'}
+              <span className="text-gray-600 font-bold">✕</span>
             </button>
           </div>
           
-          {/* Alt butonlar */}
-          <div className="flex justify-between">
+          {/* Scrollable içerik */}
+          <div className="overflow-y-auto p-4 flex-grow">
+            <p className="text-gray-600 mb-3 text-sm">
+              Oluşturduğunuz kartı Instagram hikayenizde paylaşarak boykota destek olun.
+            </p>
+            
+            {/* Kompakt hikaye paylaşımı rehberi */}
+            <div className="bg-gray-50 rounded-lg p-3 mb-3 shadow-sm">
+              <h4 className="text-gray-700 font-semibold mb-2 text-sm">PAYLAŞIM ADIMLAR</h4>
+              
+              <div className="space-y-2">
+                <div className="flex items-start">
+                  <div className="bg-purple-500 text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2 text-xs">
+                    1
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-800 text-sm">Kartı İndirin</p>
+                    <p className="text-gray-600 text-xs">
+                      Aşağıdaki "Kartı İndir" butonuna dokunun
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="bg-purple-500 text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2 text-xs">
+                    2
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-800 text-sm">Instagram'ı Açın</p>
+                    <p className="text-gray-600 text-xs">
+                      Telefonunuzdan Instagram uygulamasına geçin
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="bg-purple-500 text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2 text-xs">
+                    3
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-800 text-sm">Hikaye Oluşturun</p>
+                    <p className="text-gray-600 text-xs">
+                      Sol üstteki profil fotoğrafınıza dokunup "Hikaye" seçin
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="bg-purple-500 text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2 text-xs">
+                    4
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-800 text-sm">Galeriden Seçin</p>
+                    <p className="text-gray-600 text-xs">
+                      Sol altta galeri simgesine dokunup kartı seçin
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="bg-purple-500 text-white w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 mr-2 text-xs">
+                    5
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-800 text-sm">Bağlantı Ekleyin</p>
+                    <p className="text-gray-600 text-xs">
+                      Üst menüdeki "Aa" butonuna dokunup aşağıdaki adresi yazın:
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Bağlantı ve kopyalama butonu - Kompakt */}
+            <div className="bg-gray-50 border border-gray-200 rounded-md py-2 px-3 mb-3 flex items-center justify-between">
+              <span className="text-sm text-gray-700">boykot-kampanya.vercel.app</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText('boykot-kampanya.vercel.app');
+                  setCopySuccess(true);
+                  setTimeout(() => setCopySuccess(false), 2000);
+                }}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs py-1 px-2 rounded border border-gray-300 transition-colors flex items-center"
+              >
+                <Copy size={12} className="mr-1" />
+                {copySuccess ? 'Kopyalandı!' : 'Kopyala'}
+              </button>
+            </div>
+          </div>
+          
+          {/* Sabit alt butonlar */}
+          <div className="flex justify-between p-4 border-t border-gray-100">
             <button
               onClick={() => downloadImage(previewImage, 'boykot-karti.jpg')}
               className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-md hover:from-purple-700 hover:to-pink-600 transition-colors flex items-center font-medium"
