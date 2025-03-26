@@ -62,6 +62,9 @@ const BoycottApp = () => {
     }
   };
 
+  // Paylaş sayfası render edilmeden önce cihaz kontrolü yap
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
   // Firestore'daki global istatistikleri gerçek zamanlı dinliyoruz
   useEffect(() => {
     const globalRef = doc(firestore, 'stats', 'global');
@@ -216,7 +219,7 @@ const BoycottApp = () => {
     );
   };
 
-  // kart oluşturma ve paylaşım işlemi - geliştirilmiş, dataUrl döndüren
+  // kart oluşturma ve paylaşım işlemi - geliştirilmiş, cihaz tipine göre farklı davranış
   const handleShareWithBadge = async (platform) => {
     try {
       // kart metnini oluştur
@@ -271,19 +274,19 @@ const BoycottApp = () => {
       // Görseli base64 formatına çevir
       const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
       
-      // Paylaşım işlemi
+      // Paylaşım işlemi - platform türüne göre
       switch(platform) {
-        case 'instagram': {
-          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-          if (isMobile) {
-            // Görseli önizleme modalında göster
-            setPreviewImage(dataUrl);
-            
-            // Kısa bir gecikme ile Instagram modalını göster
-            setTimeout(() => {
-              setInstagramTipVisible(true);
-            }, 1000);
-          }
+        case 'instagram-mobile': {
+          setPreviewImage(dataUrl);
+          setInstagramTipVisible(true);
+          break;
+        }
+        
+        case 'instagram-desktop': {
+          // Masaüstünde doğrudan indir
+          downloadImage(dataUrl, 'boykot-karti.jpg');
+          // Bilgi mesajı
+          alert('Instagram\'da paylaşmak için görseli indirdikten sonra Instagram web sitesine veya uygulamasına yükleyebilirsiniz.');
           break;
         }
           
@@ -317,53 +320,132 @@ const BoycottApp = () => {
     }
   };
   
-  // Instagram paylaşım modalı bileşeni - Güncellenmiş
+  // Instagram paylaşım modalı - Profesyonel tasarımla geliştirilmiş
   const InstagramTipModal = ({ isVisible, onClose }) => {
     if (!isVisible) return null;
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-          <h3 className="text-lg font-bold mb-4">Instagram'da Paylaşım</h3>
-          <p className="text-gray-600 mb-4">
-            Kart görseliniz hazır! Instagram'da paylaşmak için:
+        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+          <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+            <div className="flex items-center">
+              <div className="bg-gradient-to-tr from-purple-600 to-pink-500 p-2 rounded-md mr-3">
+                <Instagram size={22} className="text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800">Instagram'da Paylaş</h3>
+            </div>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+              ✕
+            </button>
+          </div>
+          
+          <p className="text-gray-600 mb-5 font-medium">
+            Oluşturduğunuz kartı Instagram hikayenizde paylaşarak boykota destek olan herkesin gücünü gösterin.
           </p>
-          <ol className="list-decimal list-inside text-gray-600 mb-4 space-y-2">
-            <li>Kartı indirin</li>
-            <li>Instagram uygulamasını açın</li>
-            <li>Hikaye oluştur'a tıklayın</li>
-            <li>İndirdiğiniz kartı seçin</li>
-            <li>Metin ekle butonuna tıklayın</li>
-            <li>Aşağıdaki bağlantıyı kopyalayıp yapıştırın</li>
-            <li>Paylaşın</li>
-          </ol>
-          <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-700">boykot-kampanya.vercel.app</span>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText('boykot-kampanya.vercel.app');
-                  setCopySuccess(true);
-                  setTimeout(() => setCopySuccess(false), 2000);
-                }}
-                className="bg-white hover:bg-gray-100 text-gray-700 text-xs py-1 px-3 rounded border border-gray-300 transition-colors flex items-center"
-              >
-                <Copy size={14} className="mr-1" />
-                {copySuccess ? 'Kopyalandı!' : 'Kopyala'}
-              </button>
+          
+          {/* Profesyonel hikaye paylaşımı rehberi */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-5 mb-5 shadow-inner">
+            <h4 className="text-gray-700 font-semibold mb-4 flex items-center">
+              <span className="inline-block bg-purple-100 text-purple-600 p-1 rounded-md mr-2">
+                <Share2 size={16} />
+              </span>
+              PAYLAŞIM ADIMLAR
+            </h4>
+            
+            <div className="space-y-4">
+              <div className="flex">
+                <div className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 mr-3">
+                  1
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Kartı İndirin</p>
+                  <p className="text-gray-600 text-sm">
+                    Aşağıdaki "Kartı İndir" butonuna dokunarak görselinizi telefonunuza kaydedin.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex">
+                <div className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 mr-3">
+                  2
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Instagram Uygulamasını Açın</p>
+                  <p className="text-gray-600 text-sm">
+                    Telefonunuzdan Instagram uygulamasına geçiş yapın veya uygulamayı açın.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex">
+                <div className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 mr-3">
+                  3
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Hikaye Oluşturun</p>
+                  <p className="text-gray-600 text-sm">
+                    Sol üstteki profil fotoğrafınıza uzun basın veya sağ üstteki "+" simgesine dokunarak "Hikaye" seçeneğini seçin.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex">
+                <div className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 mr-3">
+                  4
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Galeriden Seçin</p>
+                  <p className="text-gray-600 text-sm">
+                    Ekranın sol alt köşesindeki galeri simgesine dokunun ve az önce indirdiğiniz boykot kartını seçin.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex">
+                <div className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 mr-3">
+                  5
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Web Sitesi Bağlantısını Ekleyin</p>
+                  <p className="text-gray-600 text-sm">
+                    Üst menüden "Aa" metin ekleme butonuna dokunun ve aşağıdaki kampanya bağlantısını yazın veya yapıştırın:
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex justify-end space-x-2">
+          
+          {/* Bağlantı ve kopyalama butonu */}
+          <div className="bg-gray-50 border border-gray-200 rounded-md py-2 px-3 mb-5 flex items-center justify-between">
+            <div className="flex items-center text-gray-700">
+              <Globe size={15} className="mr-2 text-gray-500" />
+              <span className="font-medium text-sm">boykot-kampanya.vercel.app</span>
+            </div>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText('boykot-kampanya.vercel.app');
+                setCopySuccess(true);
+                setTimeout(() => setCopySuccess(false), 2000);
+              }}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs py-1 px-3 rounded border border-gray-300 transition-colors flex items-center"
+            >
+              <Copy size={14} className="mr-1" />
+              {copySuccess ? 'Kopyalandı!' : 'Kopyala'}
+            </button>
+          </div>
+          
+          {/* Alt butonlar */}
+          <div className="flex justify-between">
             <button
               onClick={() => downloadImage(previewImage, 'boykot-karti.jpg')}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
+              className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-md hover:from-purple-700 hover:to-pink-600 transition-colors flex items-center font-medium"
             >
               <Download size={16} className="mr-2" />
               Kartı İndir
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-medium"
             >
               Kapat
             </button>
@@ -373,10 +455,11 @@ const BoycottApp = () => {
     );
   };
 
-  // Sosyal medya paylaşım işlemi
+  // Sosyal medya paylaşım işlemi - Düzeltilmiş Instagram desteği ile
   const handleShare = (platform) => {
     const shareText = `#Boykot kampanyasına ben de katıldım! ${participants.toLocaleString()} kişiyiz ve büyüyoruz. Sen de katıl:`;
     const shareUrl = 'https://boykot-kampanya.vercel.app';
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     switch(platform) {
       case 'twitter':
@@ -389,7 +472,13 @@ const BoycottApp = () => {
         window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
         break;
       case 'instagram':
-        handleShareWithBadge('instagram');
+        if (isMobile) {
+          // Mobil cihazlarda Instagram uygulamasına yönlendirmeyi dene
+          handleShareWithBadge('instagram-mobile');
+        } else {
+          // Masaüstünde doğrudan görseli indirmeyi öner
+          handleShareWithBadge('instagram-desktop');
+        }
         break;
       default:
         if (navigator.share) {
@@ -501,15 +590,15 @@ const BoycottApp = () => {
                     <ul className="space-y-2">
                       <li className="flex items-start">
                         <ChevronRight size={18} className="mt-0.5 mr-2 flex-shrink-0" />
-                        <span>İnsanları boykota katılmaya teşvik etmek</span>
+                        <span>Kolektif tüketici gücünü göstermek ve dayanışmayı artırmak</span>
                       </li>
                       <li className="flex items-start">
                         <ChevronRight size={18} className="mt-0.5 mr-2 flex-shrink-0" />
-                        <span>Katılımı anonim şekilde saymak</span>
+                        <span>Tam gizlilik sağlayarak herkesin güvenle katılımını sağlamak</span>
                       </li>
                       <li className="flex items-start">
                         <ChevronRight size={18} className="mt-0.5 mr-2 flex-shrink-0" />
-                        <span>Boykotun etkisini göstermek</span>
+                        <span>Kampanyanın büyüyen etkisini şeffaf biçimde görselleştirmek</span>
                       </li>
                     </ul>
                   </div>
@@ -545,10 +634,12 @@ const BoycottApp = () => {
                         <Share2 size={18} className="mr-2" />
                         WhatsApp'ta Paylaş
                       </button>
-                      <button onClick={() => handleShare('instagram')} className="flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-3 px-4 rounded-md transition-all duration-200">
-                        <Instagram size={18} className="mr-2" />
-                        Instagram'da Paylaş
-                      </button>
+                      {isMobile && (
+                        <button onClick={() => handleShare('instagram')} className="flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-3 px-4 rounded-md transition-all duration-200">
+                          <Instagram size={18} className="mr-2" />
+                          Instagram'da Paylaş
+                        </button>
+                      )}
                     </div>
                     
                   </div>
@@ -559,20 +650,24 @@ const BoycottApp = () => {
                       <div className="text-sm text-red-600 mt-2">#{activeDays}. GÜN</div>
                       <div className="text-lg font-bold text-black mt-1">{participants} KİŞİYİZ</div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button 
-                        onClick={async () => {
-                          const dataUrl = await handleShareWithBadge('download');
-                          if (dataUrl) {
-                            downloadImage(dataUrl, 'boykot-karti.jpg');
-                          }
-                        }}
-                        className="flex items-center justify-center bg-gray-800 hover:bg-gray-900 text-white font-medium py-2.5 px-4 rounded-md transition-all duration-200"
-                      >
-                        <Download size={16} className="mr-2" />
-                        Görseli İndir
-                      </button>
-                    </div>
+                    {isMobile && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <button 
+                          onClick={async () => {
+                            // Görseli önce oluştur
+                            const dataUrl = await handleShareWithBadge('download');
+                            if (dataUrl) {
+                              // Ardından indir
+                              downloadImage(dataUrl, 'boykot-karti.jpg');
+                            }
+                          }}
+                          className="flex items-center justify-center bg-gray-800 hover:bg-gray-900 text-white font-medium py-2.5 px-4 rounded-md transition-all duration-200"
+                        >
+                          <Download size={16} className="mr-2" />
+                          Görseli İndir
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
