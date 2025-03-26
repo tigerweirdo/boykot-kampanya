@@ -19,6 +19,49 @@ const BoycottApp = () => {
   const [instagramTipVisible, setInstagramTipVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
 
+  // İyileştirilmiş görsel indirme fonksiyonu - Masaüstü ve mobil için
+  const downloadImage = (imageUrl, fileName) => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Mobil cihazlar için, görseli yeni bir sekmede aç
+      // Bu, kullanıcıların tarayıcının yerel arayüzünü kullanarak galerilerine kaydetmelerini sağlar
+      const newTab = window.open();
+      if (newTab) {
+        newTab.document.write(`
+          <html>
+            <head>
+              <title>Boykot Kartı</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #f5f5f5; font-family: Arial, sans-serif; }
+                img { max-width: 100%; height: auto; margin-bottom: 20px; }
+                .instructions { padding: 15px; text-align: center; background: white; border-radius: 8px; margin: 0 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+                h3 { margin-top: 0; }
+              </style>
+            </head>
+            <body>
+              <img src="${imageUrl}" alt="Boykot Kartı" />
+              <div class="instructions">
+                <h3>Görseli Kaydetmek İçin:</h3>
+                <p>Görsele uzun basın ve "Görseli Kaydet" seçeneğini seçin.</p>
+              </div>
+            </body>
+          </html>
+        `);
+        newTab.document.close();
+      }
+    } else {
+      // Masaüstü için geleneksel indirme
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = fileName || 'boykot-karti.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   // Firestore'daki global istatistikleri gerçek zamanlı dinliyoruz
   useEffect(() => {
     const globalRef = doc(firestore, 'stats', 'global');
@@ -143,7 +186,7 @@ const BoycottApp = () => {
     ctx.stroke();
   };
 
-  // Görsel önizleme modalı bileşeni
+  // Görsel önizleme modalı bileşeni - Güncellenmiş indirme fonksiyonu ile
   const ImagePreviewModal = ({ isVisible, onClose, imageUrl }) => {
     if (!isVisible) return null;
     
@@ -160,14 +203,7 @@ const BoycottApp = () => {
             <img src={imageUrl} alt="Boykot Kartı" className="w-full h-auto rounded-lg" />
             <div className="absolute bottom-4 right-4 flex space-x-2">
               <button
-                onClick={() => {
-                  const link = document.createElement('a');
-                  link.href = imageUrl;
-                  link.download = 'boykot-karti.jpg';
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                }}
+                onClick={() => downloadImage(imageUrl, 'boykot-karti.jpg')}
                 className="bg-white text-gray-800 px-4 py-2 rounded-md shadow-md hover:bg-gray-100 flex items-center"
               >
                 <Download size={16} className="mr-2" />
@@ -180,7 +216,7 @@ const BoycottApp = () => {
     );
   };
 
-  // kart oluşturma ve paylaşım işlemi
+  // kart oluşturma ve paylaşım işlemi - geliştirilmiş, dataUrl döndüren
   const handleShareWithBadge = async (platform) => {
     try {
       // kart metnini oluştur
@@ -254,7 +290,7 @@ const BoycottApp = () => {
         case 'download':
           // Görseli önizleme modalında göster
           setPreviewImage(dataUrl);
-          break;
+          return dataUrl; // doğrudan indirme için dataUrl'i döndür
           
         case 'copy':
           // Görseli ve metni panoya kopyala
@@ -273,12 +309,15 @@ const BoycottApp = () => {
             });
           }
       }
+      
+      return dataUrl; // Hepsinde dataUrl döndürelim
     } catch (error) {
       console.error('Görsel oluşturma hatası:', error);
+      return null;
     }
   };
   
-  // Instagram paylaşım modalı bileşeni
+  // Instagram paylaşım modalı bileşeni - Güncellenmiş
   const InstagramTipModal = ({ isVisible, onClose }) => {
     if (!isVisible) return null;
     
@@ -316,7 +355,7 @@ const BoycottApp = () => {
           </div>
           <div className="flex justify-end space-x-2">
             <button
-              onClick={() => handleShareWithBadge('download')}
+              onClick={() => downloadImage(previewImage, 'boykot-karti.jpg')}
               className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
             >
               <Download size={16} className="mr-2" />
@@ -522,7 +561,12 @@ const BoycottApp = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <button 
-                        onClick={() => handleShareWithBadge('download')} 
+                        onClick={async () => {
+                          const dataUrl = await handleShareWithBadge('download');
+                          if (dataUrl) {
+                            downloadImage(dataUrl, 'boykot-karti.jpg');
+                          }
+                        }}
                         className="flex items-center justify-center bg-gray-800 hover:bg-gray-900 text-white font-medium py-2.5 px-4 rounded-md transition-all duration-200"
                       >
                         <Download size={16} className="mr-2" />
