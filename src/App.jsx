@@ -202,14 +202,7 @@ const BoycottApp = () => {
     switch(platform) {
       case 'instagram': {
         // Instagram için özel işlem
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        if (isMobile) {
-          // Mobil cihazlarda Instagram hikayelerini aç
-          window.location.href = 'instagram://story-camera';
-          setInstagramTipVisible(true);
-        } else {
-          setInstagramTipVisible(true);
-        }
+        setInstagramTipVisible(true);
         break;
       }
         
@@ -226,7 +219,7 @@ const BoycottApp = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'boykot-karti.png';
+        a.download = 'boykot-karti.jpg';
         a.click();
         URL.revokeObjectURL(url);
         break;
@@ -259,9 +252,25 @@ const BoycottApp = () => {
             <li>Hikaye oluştur'a tıklayın</li>
             <li>İndirdiğiniz kartı seçin</li>
             <li>Metin ekle butonuna tıklayın</li>
-            <li>boykot-kampanya.vercel.app adresini yapıştırın</li>
+            <li>Aşağıdaki bağlantıyı kopyalayıp yapıştırın</li>
             <li>Paylaşın</li>
           </ol>
+          <div className="bg-gray-50 border border-gray-200 rounded-md p-3 mb-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">boykot-kampanya.vercel.app</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText('boykot-kampanya.vercel.app');
+                  setCopySuccess(true);
+                  setTimeout(() => setCopySuccess(false), 2000);
+                }}
+                className="bg-white hover:bg-gray-100 text-gray-700 text-xs py-1 px-3 rounded border border-gray-300 transition-colors flex items-center"
+              >
+                <Copy size={14} className="mr-1" />
+                {copySuccess ? 'Kopyalandı!' : 'Kopyala'}
+              </button>
+            </div>
+          </div>
           <div className="flex justify-end space-x-2">
             <button
               onClick={() => handleShareWithBadge('download')}
