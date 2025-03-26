@@ -202,29 +202,16 @@ const BoycottApp = () => {
         case 'instagram': {
           const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
           if (isMobile) {
-            // Base64'ü Blob'a çevir
-            const byteString = atob(dataUrl.split(',')[1]);
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) {
-              ia[i] = byteString.charCodeAt(i);
-            }
-            const blob = new Blob([ab], { type: 'image/jpeg' });
-            const url = URL.createObjectURL(blob);
-            
             // Görseli indir
             const link = document.createElement('a');
-            link.href = url;
+            link.href = dataUrl;
             link.download = 'boykot-karti.jpg';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
             // Görseli yeni sekmede aç
-            window.open(url, '_blank');
-            
-            // URL'i temizle
-            URL.revokeObjectURL(url);
+            window.open(dataUrl, '_blank');
             
             // Kısa bir gecikme ile Instagram modalını göster
             setTimeout(() => {
@@ -236,19 +223,15 @@ const BoycottApp = () => {
           
         case 'download':
           // Görseli indir ve aç
-          const downloadUrl = URL.createObjectURL(new Blob([atob(dataUrl.split(',')[1])], { type: 'image/jpeg' }));
-          const downloadLink = document.createElement('a');
-          downloadLink.href = downloadUrl;
-          downloadLink.download = 'boykot-karti.jpg';
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
+          const link = document.createElement('a');
+          link.href = dataUrl;
+          link.download = 'boykot-karti.jpg';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
           
           // Görseli yeni sekmede aç
-          window.open(downloadUrl, '_blank');
-          
-          // URL'i temizle
-          URL.revokeObjectURL(downloadUrl);
+          window.open(dataUrl, '_blank');
           break;
           
         case 'copy':
