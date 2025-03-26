@@ -196,13 +196,25 @@ const BoycottApp = () => {
     // Web sitesi - Kişiye özel renkli, daha küçük
     
     // Görseli yüksek kalitede PNG olarak oluştur
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 1.0));
     
     // Paylaşım işlemi
     switch(platform) {
       case 'instagram': {
         // Instagram için özel işlem
-        setInstagramTipVisible(true);
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          // Görseli indir
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'boykot-karti.jpg';
+          a.click();
+          URL.revokeObjectURL(url);
+          setInstagramTipVisible(true);
+        } else {
+          setInstagramTipVisible(true);
+        }
         break;
       }
         
