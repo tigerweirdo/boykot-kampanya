@@ -144,106 +144,105 @@ const BoycottApp = () => {
 
   // kart oluşturma ve paylaşım işlemi
   const handleShareWithBadge = async (platform) => {
-    // kart metnini oluştur
-    const badgeText = `Ben de\nBOYKOTA KATILDIM\n#${activeDays}. Gün\n${participants} kişiyiz\nboykot-kampanya.vercel.app`;
-    
-    // kart görselini oluştur
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Instagram hikaye boyutları (9:16 oranı)
-    canvas.width = 1080;
-    canvas.height = 1920;
-    
-    // Minimal beyaz arka plan
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Kişiye özel renk oluştur (her kullanıcı için farklı)
-    const personalColor = getPersonalColor(joinNumber || participants);
-    
-    // İnce ve zarif çizgiler ekle
-    drawElegantLines(ctx, canvas.width, canvas.height, personalColor);
-    
-    // Metin hizalama ayarları
-    ctx.textAlign = 'center';
-    
-    // BEN DE yazısı - Kişiye özel renkli
-    ctx.fillStyle = personalColor;
-    ctx.font = 'bold 90px Montserrat, Arial, sans-serif';
-    ctx.fillText('BEN DE', canvas.width/2, canvas.height * 0.25);
-    
-    // BOYKOTA yazısı - Siyah, ultra kalın
-    ctx.fillStyle = '#000000';
-    ctx.font = '900 150px Montserrat, Arial, sans-serif';
-    ctx.fillText('BOYKOTA', canvas.width/2, canvas.height * 0.35);
-    
-    // KATILDIM yazısı - Siyah, ultra kalın
-    ctx.fillStyle = '#000000';
-    ctx.font = '900 150px Montserrat, Arial, sans-serif';
-    ctx.fillText('KATILDIM', canvas.width/2, canvas.height * 0.45);
-    
-    // Gün bilgisi - Kişiye özel renkli
-    ctx.fillStyle = personalColor;
-    ctx.font = 'bold 80px Montserrat, Arial, sans-serif';
-    ctx.fillText(`#${activeDays}. GÜN`, canvas.width/2, canvas.height * 0.58);
-    
-    // Kişi sayısı - Siyah, büyük ve bold
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 90px Montserrat, Arial, sans-serif';
-    ctx.fillText(`${participants} KİŞİYİZ`, canvas.width/2, canvas.height * 0.68);
-    
-    // Web sitesi - Kişiye özel renkli, daha küçük
-    
-    // Görseli yüksek kalitede PNG olarak oluştur
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 1.0));
-    
-    // Paylaşım işlemi
-    switch(platform) {
-      case 'instagram': {
-        // Instagram için özel işlem
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        if (isMobile) {
+    try {
+      // kart metnini oluştur
+      const badgeText = `Ben de\nBOYKOTA KATILDIM\n#${activeDays}. Gün\n${participants} kişiyiz\nboykot-kampanya.vercel.app`;
+      
+      // kart görselini oluştur
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Instagram hikaye boyutları (9:16 oranı)
+      canvas.width = 1080;
+      canvas.height = 1920;
+      
+      // Minimal beyaz arka plan
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Kişiye özel renk oluştur (her kullanıcı için farklı)
+      const personalColor = getPersonalColor(joinNumber || participants);
+      
+      // İnce ve zarif çizgiler ekle
+      drawElegantLines(ctx, canvas.width, canvas.height, personalColor);
+      
+      // Metin hizalama ayarları
+      ctx.textAlign = 'center';
+      
+      // BEN DE yazısı - Kişiye özel renkli
+      ctx.fillStyle = personalColor;
+      ctx.font = 'bold 90px Montserrat, Arial, sans-serif';
+      ctx.fillText('BEN DE', canvas.width/2, canvas.height * 0.25);
+      
+      // BOYKOTA yazısı - Siyah, ultra kalın
+      ctx.fillStyle = '#000000';
+      ctx.font = '900 150px Montserrat, Arial, sans-serif';
+      ctx.fillText('BOYKOTA', canvas.width/2, canvas.height * 0.35);
+      
+      // KATILDIM yazısı - Siyah, ultra kalın
+      ctx.fillStyle = '#000000';
+      ctx.font = '900 150px Montserrat, Arial, sans-serif';
+      ctx.fillText('KATILDIM', canvas.width/2, canvas.height * 0.45);
+      
+      // Gün bilgisi - Kişiye özel renkli
+      ctx.fillStyle = personalColor;
+      ctx.font = 'bold 80px Montserrat, Arial, sans-serif';
+      ctx.fillText(`#${activeDays}. GÜN`, canvas.width/2, canvas.height * 0.58);
+      
+      // Kişi sayısı - Siyah, büyük ve bold
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 90px Montserrat, Arial, sans-serif';
+      ctx.fillText(`${participants} KİŞİYİZ`, canvas.width/2, canvas.height * 0.68);
+
+      // Görseli base64 formatına çevir
+      const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+      
+      // Paylaşım işlemi
+      switch(platform) {
+        case 'instagram': {
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+          if (isMobile) {
+            // Mobil cihazlarda direkt indirme linki oluştur
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = 'boykot-karti.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+          setInstagramTipVisible(true);
+          break;
+        }
+          
+        case 'download':
           // Görseli indir
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'boykot-karti.jpg';
-          a.click();
-          URL.revokeObjectURL(url);
-          setInstagramTipVisible(true);
-        } else {
-          setInstagramTipVisible(true);
-        }
-        break;
-      }
-        
-      case 'copy':
-        // Görseli ve metni panoya kopyala
-        navigator.clipboard.writeText(badgeText).then(() => {
-          setCopySuccess(true);
-          setTimeout(() => setCopySuccess(false), 2000);
-        });
-        break;
-        
-      case 'download':
-        // Görseli indir
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'boykot-karti.jpg';
-        a.click();
-        URL.revokeObjectURL(url);
-        break;
-        
-      default:
-        if (navigator.share) {
-          navigator.share({
-            title: 'Boykot Kampanyası',
-            text: badgeText,
-            url: 'https://boykot-kampanya.vercel.app'
+          const link = document.createElement('a');
+          link.href = dataUrl;
+          link.download = 'boykot-karti.jpg';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          break;
+          
+        case 'copy':
+          // Görseli ve metni panoya kopyala
+          navigator.clipboard.writeText(badgeText).then(() => {
+            setCopySuccess(true);
+            setTimeout(() => setCopySuccess(false), 2000);
           });
-        }
+          break;
+          
+        default:
+          if (navigator.share) {
+            navigator.share({
+              title: 'Boykot Kampanyası',
+              text: badgeText,
+              url: 'https://boykot-kampanya.vercel.app'
+            });
+          }
+      }
+    } catch (error) {
+      console.error('Görsel oluşturma hatası:', error);
     }
   };
   
@@ -480,16 +479,7 @@ const BoycottApp = () => {
                         Instagram'da Paylaş
                       </button>
                     </div>
-                    <div className="relative mt-6">
-                      <div className="border border-gray-200 rounded-md p-3 bg-gray-50 text-sm text-gray-700 leading-relaxed">
-                        boykot-kampanya.vercel.app
-                      </div>
-                      <div className="flex justify-end mt-2">
-                        <button onClick={() => handleShare('copy')} className="bg-white hover:bg-gray-100 text-gray-700 text-xs py-1 px-2 rounded border border-gray-300 transition-colors">
-                          {copySuccess ? 'Kopyalandı!' : 'Kopyala'}
-                        </button>
-                      </div>
-                    </div>
+                    
                   </div>
                   <div>
                     <div className="bg-white border-2 border-gray-200 text-center p-6 rounded-md mb-4">
